@@ -88,12 +88,12 @@ function App() {
     };
   }, []);
 
-  const lines = ParagraphToLineByLineLength(characterArray, 80);
-
   useEffect(() => {
     handleKeyboardEvent(trigger.current.key, trigger.current.index);
     console.log(trigger.current, "he");
   }, [trigger.current.index]);
+
+  const lines = ParagraphToLineByLineLength(characterArray, 80);
 
   return (
     <>
