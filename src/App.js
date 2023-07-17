@@ -17,18 +17,29 @@ function getCssClassForCharacter(character) {
 const ParagraphToLineByLineLength = (characterImps, lineLength) => {
   const lines = [];
   let currentLine = [];
-  let currentLength = 0;
 
   characterImps.forEach((characterImp, index) => {
-    const characterLength = characterImp.character === " " ? 1 : 0;
+    currentLine.push(characterImp);
 
-    if (currentLength + characterLength <= lineLength) {
-      currentLine.push(characterImp);
-      currentLength += characterLength;
-    } else {
+    if (characterImp.character === " " && currentLine.length == lineLength) {
       lines.push(currentLine);
-      currentLine = [characterImp];
-      currentLength = characterLength;
+      currentLine = [];
+    } else if (
+      currentLine.length === lineLength &&
+      characterImp.character != " "
+    ) {
+      const lastSpaceIndex = currentLine
+        .map((charImp) => charImp.character)
+        .lastIndexOf(" ");
+      if (lastSpaceIndex !== -1) {
+        const nextLineStartingIndex = lastSpaceIndex + 1;
+        const nextLine = currentLine.splice(nextLineStartingIndex);
+        lines.push(currentLine);
+        currentLine = nextLine;
+      } else {
+        lines.push(currentLine);
+        currentLine = [characterImp];
+      }
     }
 
     if (index === characterImps.length - 1) {
@@ -36,6 +47,7 @@ const ParagraphToLineByLineLength = (characterImps, lineLength) => {
     }
   });
 
+  console.log(lines);
   return lines;
 };
 
@@ -49,7 +61,7 @@ const ParagraphToCharacterArrayConversion = (text) => {
 
 function App() {
   let data =
-    "the sign made it clear that they didnt want anyone around that wasnt going to stop jack jack always lived with the notion that signs were mere suggestions not actually absolute rules Thats why the moment jack looked at the sign made it clear that they didnt want anyone around That wasnt going to stop jack jack always lived with the notion that signs were mere suggestions not actually absolute rules Thats why the moment jack looked at";
+    "monkeytype clone is a remarkable typing tool that assists in honing your typing speed and precision it presents a simple yet sleek interface along with a diverse selection of unique texts quotes and paragraphs to practice on by monitoring your words per minute and providing visual feedback on your performance this clone allows you to track your progress over time with its comprehensive statistics and engaging approach it serves as an excellent resource for individuals aiming to improve their typing skills effectively and enjoyably";
 
   const [globalIndex, setGlobalIndex] = useState(0);
 
@@ -98,7 +110,7 @@ function App() {
     setCharacterArray(ParagraphToCharacterArrayConversion(data));
   }, []);
 
-  const lines = ParagraphToLineByLineLength(characterArray, 80);
+  const lines = ParagraphToLineByLineLength(characterArray, 84);
 
   const trigger = useRef({ key: "", index: 0 });
 
