@@ -49,8 +49,6 @@ function App() {
     ParagraphToCharacterArrayConversion(data)
   );
 
-  const trigger = useRef({ key: "", index: 0 });
-
   function handleKeyboardEvent(key, index) {
     let newCharacterState;
     if (characterArray[index].character === key) {
@@ -71,11 +69,11 @@ function App() {
   }
 
   function handleTrigger(event) {
-    handleKeyboardEvent(event.key, trigger.current.index);
     trigger.current = {
       key: event.key,
       index: trigger.current.index + 1,
     };
+    handleKeyboardEvent(event.key, trigger.current.index);
     console.log(trigger.current);
   }
 
@@ -89,11 +87,17 @@ function App() {
   }, []);
 
   useEffect(() => {
+    setCharacterArray(ParagraphToCharacterArrayConversion(data));
+  }, []);
+
+  const lines = ParagraphToLineByLineLength(characterArray, 80);
+
+  const trigger = useRef({ key: "", index: 0 });
+
+  useEffect(() => {
     handleKeyboardEvent(trigger.current.key, trigger.current.index);
     console.log(trigger.current, "he");
   }, [trigger.current.index]);
-
-  const lines = ParagraphToLineByLineLength(characterArray, 80);
 
   return (
     <>
