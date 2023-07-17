@@ -41,7 +41,7 @@ const ParagraphToCharacterArrayConversion = (text) => {
 
 function App() {
   let data =
-    "the sign made it clear that they didnt want anyone around That wasnt going to stop Jack Jack always lived with the notion that signs were mere suggestions not actually absolute rules Thats why the moment Jack looked at ";
+    "the sign made it clear that they didnt want anyone around that wasnt going to stop jack jack always lived with the notion that signs were mere suggestions not actually absolute rules Thats why the moment jack looked at the sign made it clear that they didnt want anyone around That wasnt going to stop jack jack always lived with the notion that signs were mere suggestions not actually absolute rules Thats why the moment jack looked at";
 
   const [globalIndex, setGlobalIndex] = useState(0);
 
