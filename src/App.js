@@ -17,17 +17,25 @@ function getCssClassForCharacter(character) {
 const ParagraphToLineByLineLength = (characterImps, lineLength) => {
   const lines = [];
   let currentLine = [];
-  characterImps.forEach((characterImp, index) => {
-    currentLine.push(characterImp);
+  let currentLength = 0;
 
-    if (
-      currentLine.length === lineLength ||
-      index === characterImps.length - 1
-    ) {
+  characterImps.forEach((characterImp, index) => {
+    const characterLength = characterImp.character === " " ? 1 : 0;
+
+    if (currentLength + characterLength <= lineLength) {
+      currentLine.push(characterImp);
+      currentLength += characterLength;
+    } else {
       lines.push(currentLine);
-      currentLine = [];
+      currentLine = [characterImp];
+      currentLength = characterLength;
+    }
+
+    if (index === characterImps.length - 1) {
+      lines.push(currentLine);
     }
   });
+
   return lines;
 };
 
