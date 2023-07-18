@@ -1,55 +1,10 @@
 import React, { useCallback, useEffect, useRef, useState } from "react";
 import "./App.css";
+import { getCssClassForCharacter } from "./common/utils/get-css-class-for-character";
+import { ParagraphToLineByLineLength } from "./common/utils/paragraph-to-line-by-line-length";
 
-function getCssClassForCharacter(character) {
-  switch (character.state) {
-    case "NOT_TYPED":
-      return "";
-
-    case "CORRECT":
-      return "correct";
-
-    case "INCORRECT":
-      return "incorrect";
-  }
-}
-
-const ParagraphToLineByLineLength = (characterImps, lineLength) => {
-  const lines = [];
-  let currentLine = [];
-
-  characterImps.forEach((characterImp, index) => {
-    currentLine.push(characterImp);
-
-    if (characterImp.character === " " && currentLine.length == lineLength) {
-      lines.push(currentLine);
-      currentLine = [];
-    } else if (
-      currentLine.length === lineLength &&
-      characterImp.character != " "
-    ) {
-      const lastSpaceIndex = currentLine
-        .map((charImp) => charImp.character)
-        .lastIndexOf(" ");
-      if (lastSpaceIndex !== -1) {
-        const nextLineStartingIndex = lastSpaceIndex + 1;
-        const nextLine = currentLine.splice(nextLineStartingIndex);
-        lines.push(currentLine);
-        currentLine = nextLine;
-      } else {
-        lines.push(currentLine);
-        currentLine = [characterImp];
-      }
-    }
-
-    if (index === characterImps.length - 1) {
-      lines.push(currentLine);
-    }
-  });
-
-  //console.log(lines);
-  return lines;
-};
+let data =
+  "monkeytype clone is a remarkable typing tool that assists in honing your typing speed and precision it presents a simple yet sleek interface along with a diverse selection of unique texts quotes and paragraphs to practice on by monitoring your words per minute and providing visual feedback on your performance this clone allows you to track your progress over time with its comprehensive statistics and engaging approach it serves as an excellent resource for individuals aiming to improve their typing skills effectively and enjoyably";
 
 const ParagraphToCharacterArrayConversion = (text) => {
   const characters = text.split("");
@@ -60,25 +15,29 @@ const ParagraphToCharacterArrayConversion = (text) => {
 };
 
 function App() {
-  let data =
-    "monkeytype clone is a remarkable typing tool that assists in honing your typing speed and precision it presents a simple yet sleek interface along with a diverse selection of unique texts quotes and paragraphs to practice on by monitoring your words per minute and providing visual feedback on your performance this clone allows you to track your progress over time with its comprehensive statistics and engaging approach it serves as an excellent resource for individuals aiming to improve their typing skills effectively and enjoyably";
-
   const [characterArray, setCharacterArray] = useState(
     ParagraphToCharacterArrayConversion(data)
   );
-  const lines = ParagraphToLineByLineLength(characterArray, 84);
+
+  const [lines, setLines] = useState(
+    ParagraphToLineByLineLength(characterArray, 84)
+  );
+
+  useEffect(() => {
+    setLines(ParagraphToLineByLineLength(characterArray, 84));
+  }, [characterArray]);
 
   const [globalIndex, setGlobalIndex] = useState(0);
 
-  const [linesToShow, setLinesToShow] = useState(lines.slice(0, 3));
-
   function handleKeyboardEvent(key, index) {
     let newCharacterState;
+    if (!key) return;
     if (characterArray[index].character === key) {
       newCharacterState = "CORRECT";
     } else {
       newCharacterState = "INCORRECT";
     }
+    console.log(characterArray, index);
     setCharacterArray((prev) => {
       const copy = [...prev];
       copy[index] = {
@@ -88,10 +47,9 @@ function App() {
       return copy;
     });
     setGlobalIndex(index + 1);
-    // console.log(characterArray, index);
   }
 
-  const trigger = useRef({ key: "", index: 0 });
+  const trigger = useRef({ key: "", index: -1 });
 
   function handleTrigger(event) {
     trigger.current = {
@@ -99,10 +57,19 @@ function App() {
       index: trigger.current.index + 1,
     };
     handleKeyboardEvent(event.key, trigger.current.index);
-    // console.log(trigger.current);
+  }
+
+  function getVisibleLines() {
+    const currentLineIndex = Math.floor(globalIndex / 84);
+    if (currentLineIndex > 1) {
+      return lines.slice(currentLineIndex - 1, currentLineIndex + 2);
+    } else {
+      return lines.slice(0, 3);
+    }
   }
 
   useEffect(() => {
+    setCharacterArray(ParagraphToCharacterArrayConversion(data));
     if (document) {
       document.addEventListener("keydown", handleTrigger);
     }
@@ -112,27 +79,15 @@ function App() {
   }, []);
 
   useEffect(() => {
-    setCharacterArray(ParagraphToCharacterArrayConversion(data));
-  }, []);
-
-  useEffect(() => {
     handleKeyboardEvent(trigger.current.key, trigger.current.index);
-    //  console.log(trigger.current, "he");
   }, [trigger.current.index]);
-
-  useEffect(() => {
-    const currentLineIndex = Math.floor(globalIndex / 84);
-    if (currentLineIndex > 1) {
-      setLinesToShow(lines.slice(currentLineIndex - 1, currentLineIndex + 2));
-    }
-  }, [globalIndex]);
 
   return (
     <>
       <div className="container">
         <h1 className="titleBox">MonkeyType</h1>
         <div className="textBox">
-          {linesToShow.map((line, lineIndex) => (
+          {getVisibleLines().map((line, lineIndex) => (
             <div key={lineIndex} className="line1">
               {line.map((character, characterIndex) => (
                 <span
