@@ -47,7 +47,7 @@ const ParagraphToLineByLineLength = (characterImps, lineLength) => {
     }
   });
 
-  console.log(lines);
+  //console.log(lines);
   return lines;
 };
 
@@ -63,11 +63,14 @@ function App() {
   let data =
     "monkeytype clone is a remarkable typing tool that assists in honing your typing speed and precision it presents a simple yet sleek interface along with a diverse selection of unique texts quotes and paragraphs to practice on by monitoring your words per minute and providing visual feedback on your performance this clone allows you to track your progress over time with its comprehensive statistics and engaging approach it serves as an excellent resource for individuals aiming to improve their typing skills effectively and enjoyably";
 
-  const [globalIndex, setGlobalIndex] = useState(0);
-
   const [characterArray, setCharacterArray] = useState(
     ParagraphToCharacterArrayConversion(data)
   );
+  const lines = ParagraphToLineByLineLength(characterArray, 84);
+
+  const [globalIndex, setGlobalIndex] = useState(0);
+
+  const [linesToShow, setLinesToShow] = useState(lines.slice(0, 3));
 
   function handleKeyboardEvent(key, index) {
     let newCharacterState;
@@ -85,8 +88,10 @@ function App() {
       return copy;
     });
     setGlobalIndex(index + 1);
-    console.log(characterArray, index);
+    // console.log(characterArray, index);
   }
+
+  const trigger = useRef({ key: "", index: 0 });
 
   function handleTrigger(event) {
     trigger.current = {
@@ -94,7 +99,7 @@ function App() {
       index: trigger.current.index + 1,
     };
     handleKeyboardEvent(event.key, trigger.current.index);
-    console.log(trigger.current);
+    // console.log(trigger.current);
   }
 
   useEffect(() => {
@@ -110,21 +115,24 @@ function App() {
     setCharacterArray(ParagraphToCharacterArrayConversion(data));
   }, []);
 
-  const lines = ParagraphToLineByLineLength(characterArray, 84);
-
-  const trigger = useRef({ key: "", index: 0 });
-
   useEffect(() => {
     handleKeyboardEvent(trigger.current.key, trigger.current.index);
-    console.log(trigger.current, "he");
+    //  console.log(trigger.current, "he");
   }, [trigger.current.index]);
+
+  useEffect(() => {
+    const currentLineIndex = Math.floor(globalIndex / 84);
+    if (currentLineIndex > 1) {
+      setLinesToShow(lines.slice(currentLineIndex - 1, currentLineIndex + 2));
+    }
+  }, [globalIndex]);
 
   return (
     <>
       <div className="container">
         <h1 className="titleBox">MonkeyType</h1>
         <div className="textBox">
-          {lines.map((line, lineIndex) => (
+          {linesToShow.map((line, lineIndex) => (
             <div key={lineIndex} className="line1">
               {line.map((character, characterIndex) => (
                 <span
