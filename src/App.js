@@ -2,17 +2,10 @@ import React, { useCallback, useEffect, useRef, useState } from "react";
 import "./App.css";
 import { getCssClassForCharacter } from "./common/utils/get-css-class-for-character";
 import { ParagraphToLineByLineLength } from "./common/utils/paragraph-to-line-by-line-length";
+import { ParagraphToCharacterArrayConversion } from "./common/utils/paragraph -to-character-array-conversion";
 
 let data =
   "monkeytype clone is a remarkable typing tool that assists in honing your typing speed and precision it presents a simple yet sleek interface along with a diverse selection of unique texts quotes and paragraphs to practice on by monitoring your words per minute and providing visual feedback on your performance this clone allows you to track your progress over time with its comprehensive statistics and engaging approach it serves as an excellent resource for individuals aiming to improve their typing skills effectively and enjoyably";
-
-const ParagraphToCharacterArrayConversion = (text) => {
-  const characters = text.split("");
-  return characters.map((character) => ({
-    character: character,
-    state: "NOT_TYPED",
-  }));
-};
 
 function App() {
   const [characterArray, setCharacterArray] = useState(
